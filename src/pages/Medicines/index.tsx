@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import {
@@ -8,69 +8,118 @@ import {
   Table,
   TableContainer,
   Snackbar,
+  Actions,
+  ConfirmationModal,
+  LoadingBackdrop,
 } from 'src/components';
 import { usePagination } from 'src/hooks/usePagination';
 import { useDebounce } from '@uidotdev/usehooks';
 import useSnackbarAlert from 'src/hooks/useSnackbarAlert';
-import { useGetMedicinesList } from 'src/hooks/useMedicines';
-import { listMedicinesBreadcrumbLinks, medicinesTableColumns } from './constant';
+import {
+  useDeleteMedicine,
+  useGetMedicinesList
+} from 'src/hooks/useMedicines';
+import useDeleteConfirmationModalm from 'src/hooks/useMedicines';
+import { FiUser } from 'react-icons/fi';
+import {
+  getEditMedicineRoute,
+  getEditPatientRoute,
+  getEditProcedureRoute,
+  getViewMedicinePath,
+  NEW_MEDICINE_PATH,
+} from 'src/constants/paths';
+import {
+  medicinesTableColumns,
+  listMedicinesBreadcrumbLinks,
+} from './constants';
+import { useNavigate } from 'react-router-dom';
 
 const Medicines: React.FC = (): React.ReactElement => {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<FiltersState>();
   const debouncedSearchQuery = useDebounce(filters?.searchQuery, 500);
 
-  const { snackbarAlertState, onDismiss } =
+  const { snackbarAlertState, setSnackbarAlertState, onDismiss } =
     useSnackbarAlert();
-
+  
   const { pageNumber, changePageNumber } = usePagination();
-  const { response, isFetching, isError } = useGetMedicinesList({
+
+  const { response, isFetching, isError, refetch } = useGetMedicinesList({
     apiConfig: {
       params: {
         _page: pageNumber,
-        firstName: debouncedSearchQuery,
+        firstName: debouncedSearchQuery, // Adjust this key to match your API parameter
       },
     },
   });
 
+  const { mutate: deleteMedicine, isPending: isDeleteInProgress } =
+    useDeleteMedicine({
+      onSuccess: () => {
+        setSnackbarAlertState({
+          severity: 'success',
+          title: 'Medicine Deleted',
+          message: `Medicine "${deleteConfirmationModalValuesm?.name}" deleted successfully.`,
+        });
+        refetch();
+      },
+      onError: (err: Error) => {
+        setSnackbarAlertState({
+          severity: 'error',
+          title: 'Error',
+          message: err.message,
+        });
+      },
+    });
+
+  const {
+    deleteConfirmationModalValuesm,
+    onDeleteConfirm,
+    showDeleteConfirmationModalm,
+    onShowDeleteConfirmationModalm,
+    onClose,
+  } = useDeleteConfirmationModalm({ onDelete: deleteMedicine });
+
   const noData = !response?.data?.length;
 
-  // const usersTableColumnsWithActions = useMemo(
-  //   () => [
-  //     {
-  //       id: 'avatar',
-  //       cell: () => {
-  //         return (
-  //           <FiUser size="20px" />
-  //         );
-  //       },
-  //     },
-  //     ...usersTableColumns,
-  //     {
-  //       id: 'actions',
-  //       cell: ({ row }) => {
-  //         const userValues = row.original;
+  const usersTableColumnsWithActions = useMemo(
+    () => [
+      {
+        id: 'avatar',
+        cell: () => <FiUser size="20px" />,
+      },
+      ...medicinesTableColumns,
+      {
+        id: 'actions',
+        cell: ({ row }) => {
+          const medicineValues = row.original;
 
-  //         return (
-  //           <Actions
-  //             onEditClick={() => {
-  //               navigate(getEditUserRoute(userValues.id));
-  //             }}
-  //             onDeleteClick={() => {
-  //               onShowDeleteConfirmationModal(
-  //                 userValues.id,
-  //                 userValues.username,
-  //               );
-  //             }}
-  //           />
-  //         );
-  //       },
-  //     },
-  //   ],
-  //   [],
-  // );
+          return (
+            <Actions
+          
+              onEditClick={() =>
+                navigate(getEditMedicineRoute(medicineValues.id))
+              }
+              onDeleteClick={() =>
+                onShowDeleteConfirmationModalm(
+                  medicineValues.id,
+                  medicineValues.username
+                )
+              }
+              onViewDetails={() =>
+                navigate(getViewMedicinePath(medicineValues.id))
+              }
+            />
+          );
+        },
+      },
+    ],
+    [navigate],
+  );
 
   return (
     <>
+      <LoadingBackdrop loading={!!isDeleteInProgress} />
       <Snackbar
         open={!!snackbarAlertState.message}
         severity={snackbarAlertState.severity}
@@ -81,11 +130,11 @@ const Medicines: React.FC = (): React.ReactElement => {
         <SubPanel
           pageTitle="MEDICINES"
           breadcrumbLinks={listMedicinesBreadcrumbLinks}
+          rightSideButtonText="New Medicine"
+          rightSideButtonClickEvent={() => navigate(NEW_MEDICINE_PATH)}
         />
         <TableContainer
-          onFiltersChange={(filters) => {
-            setFilters(filters);
-          }}
+          onFiltersChange={(filters) => setFilters(filters)}
           placeholder="Search By Medicine Name"
         >
           {({ showFilters }) => (
@@ -97,9 +146,9 @@ const Medicines: React.FC = (): React.ReactElement => {
                 Components={{ Loading: 'table' }}
               >
                 <Table
-                  columns={medicinesTableColumns}
-                  data={response?.data}
-                  totalRecords={response?.items}
+                  columns={usersTableColumnsWithActions}
+                  data={response?.data || []}
+                  totalRecords={response?.items || 0}
                   onPageChange={changePageNumber}
                   pageNumber={pageNumber}
                 />
@@ -108,6 +157,11 @@ const Medicines: React.FC = (): React.ReactElement => {
           )}
         </TableContainer>
       </Stack>
+      <ConfirmationModal
+        onClose={onClose}
+        onSubmit={onDeleteConfirm}
+        open={showDeleteConfirmationModalm}
+      />
     </>
   );
 };
