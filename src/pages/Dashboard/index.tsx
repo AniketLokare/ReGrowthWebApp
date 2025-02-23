@@ -12,16 +12,13 @@ import MedicalIncomeCardWrapper from './Cards/MedicalIncomeCard';
 import InventoryExpenseCardWrapper from './Cards/InventoryExpenseCard';
 import MedicineCountChart from './Charts/MedicineCountChart';
 import ReactVirtualizedTable from './ReactVirtualizedTable';
+import ClinicIncomeCard from './Cards/ClinicIncomeCard';
+import ExternalProcedureIncome from './Cards/ExternalProcedureIncomeCard';
 
 const Dashboard: React.FC = (): JSX.Element => {
   return (
     <Box sx={{ padding: '16px' }}>
       <Grid container spacing={3}>
-        {/* Procedure Count Card */}
-        <Grid item xs={12} sm={6} md={3}>
-          <ProcedureCountCard />
-        </Grid>
-
         {/* Total Income Card */}
         <Grid item xs={12} sm={6} md={3}>
           <TotalIncomeCard />
@@ -37,13 +34,19 @@ const Dashboard: React.FC = (): JSX.Element => {
           <CashPaymentCard />
         </Grid>
 
-        
+        {/* Clinic Income*/}
+        <Grid item xs={12} sm={6} md={3}>
+          <ClinicIncomeCard />
+        </Grid>
+
+        {/* External Proceduew income */}
+        <Grid item xs={12} sm={6} md={3}>
+          <ExternalProcedureIncome />
+        </Grid>
       </Grid>
 
-
-
       <Grid container spacing={2} mt={2}>
-        <Grid item xs={12} md={6} >
+        <Grid item xs={12} md={6}>
           <Card sx={{ borderRadius: 3 }}>
             <PageViewsBarChart />
           </Card>
@@ -65,10 +68,8 @@ const Dashboard: React.FC = (): JSX.Element => {
                 <ExternalHospitalReport />
               </Card>
               <Grid container spacing={2}>
-
-
                 {/* Total Income Card */}
-                <Grid item xs={12} sm={6} mt={2} >
+                <Grid item xs={12} sm={6} mt={2}>
                   <MedicalIncomeCardWrapper />
                 </Grid>
 
@@ -88,7 +89,6 @@ const Dashboard: React.FC = (): JSX.Element => {
         </Grid>
 
         {/* Row 2: Total Income and Total Orders Cards */}
-
       </Grid>
 
       <Grid container spacing={3} mt={2} mb={2}>
@@ -98,7 +98,6 @@ const Dashboard: React.FC = (): JSX.Element => {
           </Card>
         </Grid>
       </Grid>
-
     </Box>
   );
 };

@@ -7,17 +7,15 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import moment from 'moment';
 import { SUCCESS_GREEN, LIGHT_WARNING_ORANGE } from 'src/constants/colors';
 import { useGetProceduresList } from 'src/hooks/useProcedures';
 
-import { useGetExternalProcedureList } from 'src/hooks/useExternalProcedures'; // Import the hook
-
-const TotalIncomeCard: React.FC = () => {
-  const [totalIncome, setTotalIncome] = useState<string>('₹0');
+const ClinicIncomeCard: React.FC = () => {
+  const [clinicIncome, setClinicIncome] = useState<string>('₹0');
   const [percentage, setPercentage] = useState<string>('0%');
   const [isTrendingUp, setIsTrendingUp] = useState<boolean>(true);
 
@@ -32,34 +30,14 @@ const TotalIncomeCard: React.FC = () => {
     useQueryConfig: { staleTime: 5 * 60 * 1000 },
   });
 
-  const {
-    response: externalProceduresResponse,
-    isLoading: isLoadingExternal,
-    isError: isErrorExternal,
-  } = useGetExternalProcedureList({
-    apiConfig: { params: {} },
-    useQueryConfig: { staleTime: 5 * 60 * 1000 },
-  });
-
   useEffect(() => {
-    if (
-      !response ||
-      isLoading ||
-      isError ||
-      !externalProceduresResponse ||
-      isLoadingExternal ||
-      isErrorExternal
-    )
-      return;
+    if (!response || isLoading || isError) return;
 
     const procedures = response.content || [];
-    const externalProcedures = externalProceduresResponse.content || [];
     let currentMonthTotal = 0;
     let lastMonthTotal = 0;
 
-    const allProcedures = [...procedures, ...externalProcedures]; // Combine both data sets
-
-    allProcedures.forEach((procedure: any) => {
+    procedures.forEach((procedure: any) => {
       // Parse the date correctly using moment
       const procedureDate = moment(
         procedure.procedureDate,
@@ -80,7 +58,7 @@ const TotalIncomeCard: React.FC = () => {
       }
     });
 
-    setTotalIncome(`₹${currentMonthTotal.toLocaleString()}`);
+    setClinicIncome(`₹${currentMonthTotal.toLocaleString()}`);
 
     if (lastMonthTotal > 0) {
       const percentChange =
@@ -97,48 +75,11 @@ const TotalIncomeCard: React.FC = () => {
     response,
     isLoading,
     isError,
-    externalProceduresResponse,
-    isLoadingExternal,
-    isErrorExternal,
     currentMonth,
     currentYear,
     lastMonth,
     lastMonthYear,
   ]);
-
-  // useEffect(() => {
-  //   if (!response || isLoading || isError) return;
-
-  //   const procedures = response.content || [];
-  //   let currentMonthTotal = 0;
-  //   let lastMonthTotal = 0;
-
-  //   procedures.forEach((procedure: any) => {
-  //     // Parse the date correctly using moment
-  //     const procedureDate = moment(procedure.procedureDate, 'DD-MM-YYYY').toDate();
-  //     const procedureMonth = procedureDate.getMonth();
-  //     const procedureYear = procedureDate.getFullYear();
-
-  //     const finalAmount = Number(procedure.finalAmount) || 0; // Ensure finalAmount is a valid number
-
-  //     if (procedureYear === currentYear && procedureMonth === currentMonth) {
-  //       currentMonthTotal += finalAmount;
-  //     } else if (procedureYear === lastMonthYear && procedureMonth === lastMonth) {
-  //       lastMonthTotal += finalAmount;
-  //     }
-  //   });
-
-  //   setTotalIncome(`₹${currentMonthTotal.toLocaleString()}`);
-
-  //   if (lastMonthTotal > 0) {
-  //     const percentChange = ((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100;
-  //     setPercentage(`${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%`);
-  //     setIsTrendingUp(percentChange > 0);
-  //   } else {
-  //     setPercentage('N/A');
-  //     setIsTrendingUp(true);
-  //   }
-  // }, [response, isLoading, isError, currentMonth, currentYear, lastMonth, lastMonthYear]);
 
   if (isLoading) {
     return (
@@ -159,33 +100,28 @@ const TotalIncomeCard: React.FC = () => {
   }
 
   return (
-    <Card
-      sx={{
-        borderRadius: 3,
-        padding: { xs: 1, sm: 2 },
-      }}
-    >
+    <Card sx={{ borderRadius: 3, padding: { xs: 1, sm: 2 } }}>
       <CardContent>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar
             sx={{
-              bgcolor: LIGHT_WARNING_ORANGE,
+              bgcolor: SUCCESS_GREEN,
               height: { xs: 48, sm: 56 },
               width: { xs: 48, sm: 56 },
             }}
           >
-            <CurrencyRupeeIcon fontSize="large" />
+            <AccountBalanceWalletIcon fontSize="large" />
           </Avatar>
           <Box>
             <Typography variant="subtitle2" color="text.secondary">
-              Total Income
+              Clinic Income
             </Typography>
             <Typography
               variant="h6"
               fontWeight="bold"
               sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
             >
-              {totalIncome}
+              {clinicIncome}
             </Typography>
           </Box>
         </Stack>
@@ -211,4 +147,4 @@ const TotalIncomeCard: React.FC = () => {
   );
 };
 
-export default TotalIncomeCard;
+export default ClinicIncomeCard;
