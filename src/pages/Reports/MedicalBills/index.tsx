@@ -66,18 +66,19 @@ const MedicalBills: React.FC = (): JSX.Element => {
 
     
 
-    const {  finalAmountTotal} = useMemo(() => {
+    const {   finalAmountTotal,onlineTotal,cashTotal} = useMemo(() => {
         if (!response || response.length === 0) {
-            return {  finalAmountTotal: 0};
+            return {  finalAmountTotal: 0, onlineTotal: 0,cashTotal: 0};
         }
         return response.reduce(
             (totals, saleorder) => {
-                
+                totals.onlineTotal += saleorder.onlineAmount || 0;
+                totals.cashTotal += saleorder.cashAmount || 0;
                 totals.finalAmountTotal += saleorder.totalAmount || 0;
                 
                 return totals;
             },
-            {finalAmountTotal: 0}
+            {onlineTotal: 0, finalAmountTotal: 0,cashTotal: 0}
         );
     }, [response]);
 
@@ -94,7 +95,7 @@ const MedicalBills: React.FC = (): JSX.Element => {
                 <form onSubmit={handleSubmit(onApplyFilters)}>
                     <Stack spacing={2}>
                         <SubPanel
-                            pageTitle="INCOME BY CLINIC PROCEDURES"
+                            pageTitle="INCOME BY MEDICAL BILLS"
                             breadcrumbLinks={viewSalesOrdersReportBreadCrumbLinks}
                         />
 
@@ -181,7 +182,23 @@ const MedicalBills: React.FC = (): JSX.Element => {
                 alignItems: 'flex-start',
             }}
         >
-            
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <FaMobileAlt size="30px" />
+                <InfoField
+                    sx={{ marginLeft: '10px' }}
+                    label="Online Payment"
+                    value={`₹${onlineTotal.toFixed(2)}`}
+                />
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <HiOutlineCash size="30px" />
+                <InfoField
+                    sx={{ marginLeft: '10px' }}
+                    label="Cash Payment"
+                    value={`₹${cashTotal.toFixed(2)}`}
+                />
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <TbReportSearch size="30px" />
                 <InfoField

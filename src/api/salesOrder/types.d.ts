@@ -3,6 +3,8 @@ interface SaleOrder{
     billNumber?: string;
     billDate: string;
     patientName?: string;
+    onlineAmount?: number;
+    cashAmount?: number;
     totalAmount?: number;
     patientId: number;
   }

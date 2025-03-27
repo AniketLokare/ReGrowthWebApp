@@ -6,6 +6,7 @@ import {
   getSaleTransactionWithIdRoute,
   editSaleTransactionWithIdRoute,
   deleteSaleTransactionWithIdRoute,
+  GET_FILTERED_BILL_MEDICINES_ROUTE,
   
 } from 'src/api/salesTransactions/routes'; // Adjust the import path
 import axiosClient from 'src/util/axios';
@@ -22,6 +23,19 @@ export const getSalesTransactionList = (config?: AxiosRequestConfig) =>
       page: 1,
       pageSize: res.data.length,
     }));
+
+    export const getFilteredBills = (
+      fromDate: string,
+      toDate: string,
+    
+      config?: AxiosRequestConfig,
+    ) =>
+      axiosClient
+        .get<SalesTransaction[]>(GET_FILTERED_BILL_MEDICINES_ROUTE, {
+          ...config,
+          params: { fromDate, toDate },
+        })
+        .then((res) => res.data);
 
 export const createSalesTransaction = (
   payload: CreateSaleTransactionPayload,
@@ -104,4 +118,24 @@ export const useDeleteSalesTransaction = (opts?: MutationConfig<null, string>) =
     mutationFn: (id: string) => deleteSalesTransaction(id),
     ...opts,
   });
+};
+
+
+export const useGetFilteredBills = <Override = SalesTransaction[]>(opts: UseQueryOption<SalesTransaction[], Override> & {
+  fromDate: string;
+  toDate: string;
+
+}) => {
+  const { key, useQueryConfig, apiConfig, fromDate, toDate } = opts;
+  const queryKey = (key || ['filtered-bills', fromDate, toDate]) as QueryKey;
+
+  const { data, ...rest } = useQuery<SalesTransaction[]>({
+    queryKey,
+    queryFn: ({ signal }) =>
+      getFilteredBills(fromDate, toDate, { ...apiConfig, signal }),
+    enabled: !!fromDate && !!toDate,  // Ensures query is only enabled if all filters are set
+    ...useQueryConfig,
+  });
+
+  return { response: data, ...rest };
 };

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { parse, isValid, format } from 'date-fns';
 import {
   Button,
   ErrorBoundary,
@@ -14,68 +13,54 @@ import {
 import Box from '@mui/material/Box';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiSave } from 'react-icons/fi';
-
 import {
+  expenseDefaultFormValues,
+  expenseFormValidationSchema,
   getAddEditBreadCrumbLinks,
-  salesOrderDefaultFormValues,
-  salesFormValidationSchema,
 } from '../constants';
-import {
-  useCreateSaleOrder,
-  useGetSaleOrderDetail,
-  usePatchSaleOrder,
-} from 'src/hooks/useSalesOrder';
-import { SALES_ORDERS, getViewSalePath } from 'src/constants/paths';
+import { EXPENSE } from 'src/constants/paths';
 import useSnackbarAlert from 'src/hooks/useSnackbarAlert';
-import SalesOrderForm from './Form';
+import { useCreateExpense, useGetExpenseDetail, usePatchExpense } from 'src/hooks/useExpenses';
+import ExpenseForm from './Form';
+import { formatRegDate } from 'src/util/common';
 
-const AddEditSales: React.FC = (): JSX.Element => {
+const AddEditExpense: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
   const { id = '' } = useParams();
   const isEdit = !!id;
 
-  interface CreateSaleOrderResponse {
-    billId: string; // Adjust the type as per your API response
-  }
-
-
   const { snackbarAlertState, setSnackbarAlertState, onDismiss } =
     useSnackbarAlert();
 
-  const methods = useForm<CreateSalePayload>({
-    defaultValues: salesOrderDefaultFormValues,
-    resolver: yupResolver<CreateSalePayload>(salesFormValidationSchema),
+  const methods = useForm<CreateExpensePayload>({
+    defaultValues: expenseDefaultFormValues,
+    resolver: yupResolver<CreateExpensePayload>(expenseFormValidationSchema),
     mode: 'onBlur',
   });
 
-  const { isFetching, data } = useGetSaleOrderDetail({ id });
+  const { isFetching, response } = useGetExpenseDetail({
+    id,
+  });
 
   useEffect(() => {
-    if (!isFetching && data) {
-      const formattedData = {
-        ...data,
-        onlineAmount: data.onlineAmount ?? 0,
-    cashAmount: data.cashAmount ?? 0,
-    totalAmount: data.totalAmount ?? 0,
-        billDate: data.billDate
-          ? format(parse(data.billDate, 'dd-MM-yyyy', new Date()), 'yyyy-MM-dd')
-          : '',
-      };
-      reset(formattedData);  // Reset the form with the formatted date
+    if (!isFetching && response) {
+      if (response.date) {
+        response.date = formatRegDate(response.date);;
+      }
+      reset(response);
     }
-  }, [data, isFetching]);
+  }, [response, isFetching]);
 
-
-  const { mutate: patchSaleOrder, isPending: isPatchLoading } = usePatchSaleOrder(
+  const { mutate: patchExpense, isPending: isPatchLoading } = usePatchExpense(
     id,
     {
       onSuccess: () => {
-        navigate(getViewSalePath(id), {
+        navigate(EXPENSE, {
           state: {
             alert: {
               severity: 'success',
-              title: 'Bill Updated',
-              message: `Bill updated successfully.`,
+              title: 'Expense Updated.',
+              message: `Expense updated successfully.`,
             },
           },
         });
@@ -83,46 +68,34 @@ const AddEditSales: React.FC = (): JSX.Element => {
       onError: (err: Error) => {
         setSnackbarAlertState({
           severity: 'error',
-          title: 'Error',
+          title: 'ERROR.',
           message: err.message,
         });
       },
     },
   );
 
-
-  const { mutate: createSaleOrder, isPending: isCreatingOrder } = useCreateSaleOrder({
-    onSuccess: (createdData: SaleOrder) => {  // Explicitly type createdData
-      const { billId } = createdData || {};
-      if (billId) {
-        navigate(getViewSalePath(billId.toString()), {
+  const { mutate: createExpense, isPending: isCreatingExpense } =
+    useCreateExpense({
+      onSuccess: () => {
+        navigate(EXPENSE, {
           state: {
             alert: {
               severity: 'success',
-              title: 'Bill Created',
-              message: `Bill created successfully.`,
+              title: 'Expense Created.',
+              message: `Expense created successfully.`,
             },
           },
         });
-      } else {
+      },
+      onError: (err: Error) => {
         setSnackbarAlertState({
           severity: 'error',
-          title: 'Error',
-          message: 'Unable to retrieve Bill ID after creation.',
+          title: 'ERROR.',
+          message: err.message,
         });
-      }
-    },
-    onError: (err: Error) => {
-      setSnackbarAlertState({
-        severity: 'error',
-        title: 'Error',
-        message: err.message,
-      });
-    },
-  });
-
-
-
+      },
+    });
 
   const {
     formState: { isDirty },
@@ -130,25 +103,18 @@ const AddEditSales: React.FC = (): JSX.Element => {
     reset,
   } = methods;
 
-  const onSubmit = (data: CreateSalePayload) => {
-    // Ensure the date is in dd-MM-yyyy format before sending to the backend
-    const formattedData = {
-      ...data,
-
-      billDate: data.billDate
-        ? format(parse(data.billDate, 'yyyy-MM-dd', new Date()), 'dd-MM-yyyy')
-        : '',
-    };
-
+  const onSubmit = (data: CreateExpensePayload) => {
+    if (data.date) {
+      data.date = formatRegDate(data.date);;
+    }
     if (isEdit) {
-      patchSaleOrder(formattedData);
+      patchExpense(data);
     } else {
-      createSaleOrder(formattedData);
+      createExpense(data);
     }
   };
 
-
-  const isMutating = isCreatingOrder || isPatchLoading;
+  const isMutating = isCreatingExpense || isPatchLoading;
 
   return (
     <ErrorBoundary fallbackComponent={FormError}>
@@ -163,7 +129,7 @@ const AddEditSales: React.FC = (): JSX.Element => {
       <FormProvider {...methods}>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <SubPanel
-            pageTitle={isEdit ? 'Edit Bill' : 'New Bill'}
+            pageTitle={isEdit ? 'Edit Expense' : 'New Expense'}
             breadcrumbLinks={getAddEditBreadCrumbLinks(isEdit)}
             secondaryButtonText={isEdit ? 'Save Changes' : undefined}
             secondaryButtonIcon={<FiSave />}
@@ -171,10 +137,9 @@ const AddEditSales: React.FC = (): JSX.Element => {
             secondaryButtonType="submit"
           />
 
-          <Box sx={{ marginTop: '60px', maxWidth: '630px' }}>
+          <Box sx={{ marginTop: '60px' }}>
             <PageLoader isLoading={isFetching} Components={{ Loading: 'form' }}>
-            <SalesOrderForm isEdit={isEdit} />
-
+              <ExpenseForm />
 
               <Box sx={{ marginTop: '60px' }}>
                 <Button
@@ -211,4 +176,4 @@ const AddEditSales: React.FC = (): JSX.Element => {
   );
 };
 
-export default AddEditSales;
+export default AddEditExpense;

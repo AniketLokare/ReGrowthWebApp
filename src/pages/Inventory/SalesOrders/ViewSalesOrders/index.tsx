@@ -135,7 +135,7 @@ const ViewSalesOrders: React.FC = (): JSX.Element => {
       startIcon={<Icon icon="edit" size="15" />}
       sx={{ marginRight: '20px' }}
     >
-      Edit
+      Pay Now
     </Button>
     <Button
       variant="contained"

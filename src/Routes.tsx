@@ -53,6 +53,12 @@ import {
   CLINIC_PROCEDURE_REPORT,
   EXTERNAL_PROCEDURE_REPORT,
   MEDICAL_BILL_REPORT,
+  MEDICAL_BILL_MEDICINES_REPORT,
+
+  EXPENSE,
+  NEW_EXPENSE_PATH,
+  EDIT_EXPENSE_PATH,
+  VIEW_EXPENSE_PATH,
 } from './constants/paths';
 import Login from './pages/Login';
 import ProtectedRoute from './pages/Login/ProtectedRoute';
@@ -90,9 +96,15 @@ import AddEditExternalProcedure from './pages/ExternalProcedures/AddEdit';
 import ViewExternalProcedure from './pages/ExternalProcedures/ViewExternalProcedures';
 import Unauthorized from './pages/Unauthorized';
 
+import Expense from './pages/Expense';
+import AddEditExpense from './pages/Expense/AddEdit';
+import ViewExpense from './pages/Expense/ViewExpenses';
+
+
 import ClinicProceduresReport from './pages/Reports/ClinicProcedures';
 import ExternalProceduresReport from './pages/Reports/ExternalProcedures';
 import MedicalBills from './pages/Reports/MedicalBills';
+import BillMedicines from './pages/Reports/BillMedicines';
 
 
 
@@ -152,6 +164,11 @@ const AppRoutes: React.FC = () => (
       <Route path={EDIT_EXTERNAL_PROCEDURE_PATH} element={<AddEditExternalProcedure />} />
       <Route path={VIEW_EXTERNAL_PROCEDURE_PATH} element={<ViewExternalProcedure />} />
 
+      <Route path={EXPENSE} element={<Expense />} />
+      <Route path={NEW_EXPENSE_PATH} element={<AddEditExpense />} />
+      <Route path={EDIT_EXPENSE_PATH} element={<AddEditExpense />} />
+      <Route path={VIEW_EXPENSE_PATH} element={<ViewExpense />} />
+
       <Route path={USERS} element={<Users />} />
       <Route path={NEW_USER_PATH} element={<AddEditUser />} />
       <Route path={EDIT_USER_PATH} element={<AddEditUser />} />
@@ -159,6 +176,7 @@ const AppRoutes: React.FC = () => (
       <Route path={CLINIC_PROCEDURE_REPORT} element={<ClinicProceduresReport />} />
       <Route path={EXTERNAL_PROCEDURE_REPORT} element={<ExternalProceduresReport />} />
       <Route path={MEDICAL_BILL_REPORT} element={<MedicalBills />} />
+      <Route path={MEDICAL_BILL_MEDICINES_REPORT} element={<BillMedicines/>} />
     </Route>
   </Routes>
 );

@@ -89,10 +89,20 @@ export const getNewExternalProcedureRoute = (id: string) => `${NEW_EXTERNAL_PROC
 export const getEditExternalProcedureRoute = (id: string) => `${EXTERNAL_PROCEDURE}/${id}/edit`;
 export const getViewExternalProcedurePath = (id: string) => `${EXTERNAL_PROCEDURE}/${id}`;
 
+export const EXPENSE = '/expense';
+export const EDIT_EXPENSE_PATH = '/expense/:id/edit';
+export const VIEW_EXPENSE_PATH = '/expense/:id';
+export const NEW_EXPENSE_PATH = '/expense/new';
+export const getNewExpenseRoute = (id: string) => `${NEW_EXPENSE_PATH}/${id}`;
+export const getEditExpenseRoute = (id: string) => `${EXPENSE}/${id}/edit`;
+export const getViewExpensePath = (id: string) => `${EXPENSE}/${id}`;
+
+
 
 
 export const REPORTS = '/reports';
 export const CLINIC_PROCEDURE_REPORT = '/income-by-procedures';
 export const EXTERNAL_PROCEDURE_REPORT = '/income-by-externalprocedures';
 export const MEDICAL_BILL_REPORT = '/income-by-medicalbills';
+export const MEDICAL_BILL_MEDICINES_REPORT = '/income-by-medicines';
 

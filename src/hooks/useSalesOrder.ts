@@ -22,18 +22,18 @@ export const getSalesList = (config?: AxiosRequestConfig) =>
     .get<PaginatedResponse<SaleOrder>>(SALES_LIST, config)
     .then((res) => res.data);
 
-    export const getFilteredBills = (
-      fromDate: string,
-      toDate: string,
-    
-      config?: AxiosRequestConfig,
-    ) =>
-      axiosClient
-        .get<SaleOrder[]>(GET_FILTERED_BILLS_ROUTE, {
-          ...config,
-          params: { fromDate, toDate },
-        })
-        .then((res) => res.data);
+export const getFilteredBills = (
+  fromDate: string,
+  toDate: string,
+
+  config?: AxiosRequestConfig,
+) =>
+  axiosClient
+    .get<SaleOrder[]>(GET_FILTERED_BILLS_ROUTE, {
+      ...config,
+      params: { fromDate, toDate },
+    })
+    .then((res) => res.data);
 
 export const getMedicinesListBySaleOrderId = (id: string, config?: AxiosRequestConfig) =>
   axiosClient
@@ -49,7 +49,7 @@ export const createSaleOrder = (
   payload: CreateSalePayload,
   config?: AxiosRequestConfig,
 ) => axiosClient.post<SaleOrder>(NEW_SALE_ROUTE, payload, config)
-.then((res) => res.data);
+  .then((res) => res.data);
 
 export const getSaleOrderDetail = (id: string, config?: AxiosRequestConfig) =>
   axiosClient

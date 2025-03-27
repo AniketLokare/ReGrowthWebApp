@@ -5,7 +5,11 @@ import { Autocomplete, TextField } from '@mui/material';
 import { useGetPatientList } from 'src/hooks/usePatients';
 import { FormInput } from 'src/components';
 
-const SalesOrderForm: React.FC = (): JSX.Element => {
+interface SalesOrderFormProps {
+  isEdit: boolean;
+}
+
+const SalesOrderForm: React.FC<SalesOrderFormProps> = ({ isEdit }) => {
   const {
     control,
     setValue,
@@ -74,15 +78,41 @@ const SalesOrderForm: React.FC = (): JSX.Element => {
         placeholder="Patient ID"
         error={errors.patientId?.message}
       />
-      <FormInput sx={{ visibility: 'hidden' }}
-        type="number"
-        name="totalAmount"
-        label="Total Amount"
-        control={control}
-        placeholder="Enter total amount"
-        error={errors.totalAmount?.message}
-        trim
-      />
+
+{isEdit && (
+  <>
+    <FormInput
+      type="number"
+      name="onlineAmount"
+      label="Online Amount"
+      control={control}
+      placeholder="Enter Online Amount"
+      error={errors.onlineAmount?.message}
+      trim
+    />
+
+    <FormInput
+      type="number"
+      name="cashAmount"
+      label="Cash Amount"
+      control={control}
+      placeholder="Enter Cash Amount"
+      error={errors.cashAmount?.message}
+      trim
+    />
+
+    <FormInput
+      type="number"
+      name="totalAmount"
+      label="Total Amount"
+      control={control}
+      placeholder="Enter Total Amount"
+      error={errors.totalAmount?.message}
+      trim
+    />
+  </>
+)}
+
     </Stack>
   );
 };

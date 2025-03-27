@@ -33,9 +33,51 @@ export const viewSalesTransactionBreadCrumbLinks = [
   },
 ];
 
+export const viewSalesOrdersReportBreadCrumbLinks = [
+  {
+    label: 'Reports',
+    href: SALES_ORDERS,
+  },
+  {
+    label: 'Bills',
+    href: '#',
+  },
+];
+
 
 
 export const SalesTransactionTableColumns: ColumnDef<SalesTransaction, string>[] = [
+    {
+      header: 'Transaction ID',
+      accessorKey: 'billTransactionId',
+    },
+    
+    {
+      header: 'Medicine Name',
+      accessorKey: 'medName',
+    },
+    {
+      header: 'Medicine Batch',
+      accessorKey: 'medicineBatch',
+    },
+    {
+      header: 'Quantity',
+      accessorKey: 'medQuantity',
+    },
+    {
+      header: 'MRP',
+      accessorKey: 'medMrp',
+    },
+    {
+      header: 'Total Amount',
+      accessorKey: 'totalAmount',
+    },
+    
+   
+  ];
+
+
+  export const SalesTransactionReportTableColumns: ColumnDef<SalesTransaction, string>[] = [
     {
       header: 'Transaction ID',
       accessorKey: 'billTransactionId',

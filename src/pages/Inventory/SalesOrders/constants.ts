@@ -63,6 +63,14 @@ export const listSalesOrdersBreadcrumbLinks = [
         accessorKey: 'patientName',
       },
       {
+        header: 'Online',
+        accessorKey: 'onlineAmount',
+      },
+      {
+        header: 'Cash',
+        accessorKey: 'cashAmount',
+      },
+      {
         header: 'Total Amount',
         accessorKey: 'totalAmount',
       },
@@ -91,6 +99,14 @@ export const salesOrdersReportTableColumns: ColumnDef<SaleOrder, string>[] = [
       accessorKey: 'patientName',
     },
     {
+      header: 'Online',
+      accessorKey: 'onlineAmount',
+    },
+    {
+      header: 'Cash',
+      accessorKey: 'cashAmount',
+    },
+    {
       header: 'Total Amount',
       accessorKey: 'totalAmount',
     },
@@ -107,6 +123,7 @@ export const salesOrderDefaultFormValues: CreateSalePayload = {
     
     billDate: '',
     patientName: '',
+    
     totalAmount: 0,
     patientId: 0,
     };
@@ -117,6 +134,10 @@ export const salesOrderDefaultFormValues: CreateSalePayload = {
       billDate: string().required('Required'),
       patientName: string().required('Required'),   
       patientId: number().required('Required'),
+      onlineAmount: number()
+        .optional(),
+        cashAmount: number()
+        .optional(),
       totalAmount: number()
         .optional(),
       

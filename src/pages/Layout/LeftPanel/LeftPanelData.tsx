@@ -1,10 +1,11 @@
 import React from 'react';
 import { FaCartPlus, FaProcedures, FaTruck } from 'react-icons/fa';
-import { FcBriefcase, FcBullish, FcCalendar, FcConferenceCall, FcFilingCabinet, FcPortraitMode,FcViewDetails ,FcPrint  } from 'react-icons/fc';
+import { FcBriefcase, FcBullish, FcCalendar, FcConferenceCall, FcFilingCabinet, FcPortraitMode,FcViewDetails ,FcPrint,FcSalesPerformance   } from 'react-icons/fc';
 import { MdBarChart, MdNoteAdd, MdPersonAddAlt1, MdViewComfy, MdViewList,MdHail,MdHotel   } from 'react-icons/md';
 import { GiMedicinePills } from "react-icons/gi";
 import { FaUsersViewfinder } from "react-icons/fa6"
 import { FaFileMedicalAlt } from "react-icons/fa";
+import { AiFillMedicineBox } from "react-icons/ai";
 
 import {
   APPOINTMENTS,
@@ -25,6 +26,10 @@ import {
   CLINIC_PROCEDURE_REPORT,
   EXTERNAL_PROCEDURE_REPORT,
   MEDICAL_BILL_REPORT,
+  MEDICAL_BILL_MEDICINES_REPORT,
+  EXPENSE,
+  NEW_EXPENSE_PATH,
+  VIEW_EXPENSE_PATH,
 } from 'src/constants/paths';
 import { RiCalendarView, RiHeartAdd2Fill,RiCalendarCheckLine  } from 'react-icons/ri';
 import { HiUserAdd } from 'react-icons/hi';
@@ -138,7 +143,28 @@ export const globalOptions = [
         tooltip: 'View Procedures', 
       }
     ],
-    tooltip: 'Appointments', 
+    tooltip: 'External Procedures', 
+  },
+  {
+    title: 'EXPENSES',
+    icon: <FcSalesPerformance  size="24px" />,
+    options: [
+      {
+        title: 'Add Expense',
+        icon: <MdNoteAdd size="18px" />,
+        route: NEW_EXPENSE_PATH,
+        isSubItem: true,
+        tooltip: 'Add New Expense', 
+      },
+      {
+        title: 'View Expenses',
+        icon: <MdViewComfy size="18px" />,
+        route: EXPENSE,
+        isSubItem: true,
+        tooltip: 'View Expenses', 
+      }
+    ],
+    tooltip: 'External Procedures', 
   },
   {
     title: 'REPORTS',
@@ -162,6 +188,14 @@ export const globalOptions = [
         title: 'Medical Bills',
         icon: <FaFileMedicalAlt size="18px" />,
         route: MEDICAL_BILL_REPORT,
+        isSubItem: true,
+        tooltip: 'Vies Users', 
+      },
+
+      {
+        title: 'Bill Medicines',
+        icon: <AiFillMedicineBox size="18px" />,
+        route: MEDICAL_BILL_MEDICINES_REPORT,
         isSubItem: true,
         tooltip: 'Vies Users', 
       },

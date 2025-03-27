@@ -15,6 +15,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetProcedureDetail, useDeleteProcedure } from 'src/hooks/useProcedures';
+import { useGetPatientDetail } from 'src/hooks/usePatients';
 import { viewProceduresBreadCrumbLinks } from '../constants';
 import ProcedureBasicInfo from './ProcedureBasicInfo';
 import { ERROR_RED } from 'src/constants/colors';
@@ -32,6 +33,13 @@ const ViewProcedure: React.FC = (): JSX.Element => {
   const { isFetching, response } = useGetProcedureDetail({
     id,
   });
+
+  // Extract patientId from procedure details
+  const patientId = response?.patientId ? response.patientId.toString() : ""; // Ensure it's a string
+
+const { data: patientDetails } = useGetPatientDetail({ id: patientId, apiConfig: {} });
+
+
   const { snackbarAlertState, onDismiss, setSnackbarAlertState } =
     useSnackbarAlert();
 
@@ -64,6 +72,8 @@ const ViewProcedure: React.FC = (): JSX.Element => {
   
   const downloadPDF = () => {
     const doc = new jsPDF();
+
+    
   
     doc.setFillColor(33, 150, 243);
     doc.rect(0, 0, 210, 15, "F"); // Header
@@ -82,14 +92,20 @@ const ViewProcedure: React.FC = (): JSX.Element => {
       body: [[{ content: `Date: ${response?.procedureDate}\nInvoice number: ${response?.procedureId}`, styles: { halign: "right" } }]],
       theme: "plain",
     });
+
+    // Extract patient details
+  const patientFullName = `${patientDetails?.firstName || ""} ${patientDetails?.middleName || ""} ${patientDetails?.lastName || ""}`.trim();
+  const patientGender = patientDetails?.patientGender || "N/A";
+  const patientAge = patientDetails?.patientAge ? `${patientDetails.patientAge} years` : "N/A";
+  const patientMobile1 = patientDetails?.patientMobile1 || "N/A";
   
     // Billed to & From Section
     doc.autoTable({
-      startY: 35,
+      startY: 45,
       body: [
         [
           {
-            content: `Billed to:\nName: ${response?.patientName}\nPatientId: ${response?.patientId}`,
+            content: `Billed to:\nName: ${patientFullName}\nAge: ${patientAge} (${patientGender})\nMobile: ${patientMobile1}`,
             styles: { halign: "left", fontSize: 12 },
           },
           {
